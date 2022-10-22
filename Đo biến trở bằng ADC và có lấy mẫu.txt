@@ -1,0 +1,64 @@
+------- ĐO BIẾN TRỞ VỚI NGẮT, MỖI LẦN THAY ĐỔI TRỞ SẼ GỌI HÀM NGẮT, TRÁNH ẢNH HƯỞNG ĐẾN CÁC HÀM KHÁC TRONG WHILE(1) ----------
+
+/* Private variables ---------------------------------------------------------*/
+ 	ADC_HandleTypeDef hadc1;
+
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
+-----------------------------------------------------------------------------------------------------------
+/* USER CODE BEGIN 0 */
+	#define MAX_SAMPLE 30
+
+	typedef struct 
+	{
+		uint8_t index;			// gia tri dem tu 1 den 30
+		uint8_t flag;			// dựng flag khi đã tính được trung bình 
+		uint32_t val;			// giá trị trung bình
+		uint32_t tAdc;			// thời gian ADC hoạt động
+		uint32_t sum;			// tổng các giá trị đo được
+	}ADC_TypeDef_t;
+
+	ADC_TypeDef_t adc;
+
+	void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef*hadc)
+	{
+		adc.sum += HAL_ADC_GetValue(hadc);
+		adc.index++;
+		if(adc.index == (MAX_SAMPLE - 1))
+		{
+			adc.val = adc.sum/MAX_SAMPLE;
+			adc.sum = 0;
+			adc.flag = 1;
+			adc.index = 0;
+		}
+		HAL_ADC_Stop_IT(hadc);	// tat ngat ADC
+	}	
+/* USER CODE END 0 */
+-----------------------------------------------------------------------------------------------------------------------
+/* USER CODE BEGIN 2 */
+	HAL_ADCEx_Calibration_Start(&hadc1);
+  /* USER CODE END 2 */
+-----------------------------------------------------------------------------------------------------------------------
+while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		if(HAL_GetTick() - adc.tAdc >= 10)		// cứ 10 us lấy mẫu 1 lần
+		{
+			HAL_ADC_Start_IT(&hadc1);
+			adc.tAdc = HAL_GetTick();
+		}
+		if(adc.flag)
+		{
+			adc.flag = 0;
+			/* do anything here, blink led example*/
+			//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+			//	HAL_Delay(50);
+			//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+			//	HAL_Delay(150);
+		}
+
+  }
+  /* USER CODE END 3 */

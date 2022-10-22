@@ -1,0 +1,60 @@
+
+							---------- GHI VÀ ĐỌC NGÀY GIỜ VÀO IC DS1307---------
+#define DS1307_ADDR 0x68<<1
+#define DS1307_Second 0x00
+typedef struct
+{
+	uint8_t second;
+	uint8_t min;
+	uint8_t hour;
+	uint8_t day;
+	uint8_t date;
+	uint8_t month;
+	uint8_t year;
+}Date_Time;
+date_time  date_time;
+
+uint8_t Decimal2BCD(uint8_t num)		// chuyển thập phân sang BCD 2 chữ số
+{
+	return (num/10)<<4 | (num%10) ; 
+}
+
+uint8_t BCD2Decimal(uint8_t num)		// chuyển BCD sang thập phân 2 chữ số
+{
+	return (num>>4)*10 + (num&0x0F) ;
+}
+
+void  RTC_Write_Time(Date_Time *date)			// Hàm ghi ngày giờ vào IC DS1307
+{
+	uint8_t buff[8];
+	uint8_t buff[0] = DS1307_Second;
+	uint8_t buff[1] = Decimal2BCD (date->second) ; 
+	uint8_t buff[2] = Decimal2BCD (date->min) ;  
+	uint8_t buff[3] = Decimal2BCD (date->hour) ; 
+	uint8_t buff[4] = Decimal2BCD (date->day) ; 
+	uint8_t buff[5] = Decimal2BCD (date->date) ; 
+	uint8_t buff[6] = Decimal2BCD (date->month) ; 
+	uint8_t buff[7] = Decimal2BCD (date->year) ; 
+	HAL_I2C_Master_Transmit(&hi2c1, DS1307_ADDR, buff, 8, 100); 
+
+void  RTC_Read_Time(Date_Time *date)			// Hàm đọc thời gian ra
+{
+	uint8_t buff[7] ;
+	uint8_t addr_res = 0x00; 
+	HAL_I2C_Master_Transmit(&hi2c1, DS1307_ADDR, &addr_res, 1, 200); 
+	HAL_I2C_Master_Receive(&hi2c1, DS1307_ADDR, buff, 7, 200); 
+	date-> second = BCD2Decimal(buff[0]);
+	date-> min = BCD2Decimal(buff[1]);
+	date-> hour = BCD2Decimal(buff[2]);
+	date-> day = BCD2Decimal(buff[3]);
+	date-> date = BCD2Decimal(buff[4]);
+	date->month  = BCD2Decimal(buff[5]);
+	date-> year = BCD2Decimal(buff[6]);
+}
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx Sau khi InIt
+
+set_time.second  = 12;
+...
+...
+RTC_Write_Time(&date_time) ; 

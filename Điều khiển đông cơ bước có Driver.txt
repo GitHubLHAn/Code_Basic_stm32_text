@@ -1,0 +1,53 @@
+
+											------ ĐIỀU KHIỂN ĐỘNG CƠ BƯỚC THÔNG QUA DRIVER-------
+									******* Lưu ý: 3 chân (+) của driver nối với nguồn 3,3 (hoặc 5V), 3 chân (-) nối với 3 chân vdk)********
+
+/* USER CODE BEGIN 0 */
+	void delay_us(uint16_t us)
+	{
+		__HAL_TIM_SetCounter(&htim1,0);
+		while(__HAL_TIM_GetCounter(&htim1) < us);
+	}
+	void delay_us(uint16_t ms)
+	{
+		for(uint16_t i = 0; i<ms; i++)
+		{
+			delay_us(1000);
+		}
+	}
+/* USER CODE END 0 */
+-------------------------------------------------------------------------------
+/* USER CODE BEGIN 2 */
+		HAL_TIM_Base_Start(&htim1);
+		HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
+		htim2.Instance->CCR1 =0;
+		//__HAL_TIM_SetCompare(&htim2,TIM_CHANNEL_1, 500);
+		//HAL_GPIO_WritePin(DIR_GPIO_Port,DIR_Pin, GPIO_PIN_RESET);
+		
+	
+  /* USER CODE END 2 */
+-------------------------------------------------------------------------------------------------------------------------------------
+while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+		delay_ms(3000);
+		
+		HAL_GPIO_WritePin(DIR_GPIO_Port,DIR_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(EN_GPIO_Port,EN_Pin, GPIO_PIN_RESET);
+		htim2.Instance->CCR1 =500;
+		delay_ms(400);
+		
+		htim2.Instance->CCR1 =0;
+		delay_ms(1000);
+		
+		HAL_GPIO_WritePin(DIR_GPIO_Port,DIR_Pin, GPIO_PIN_RESET);
+		htim2.Instance->CCR1 =500;
+		delay_ms(400);
+		
+		htim2.Instance->CCR1 =0;
+		delay_ms(1000);
+		
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);

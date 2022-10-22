@@ -1,0 +1,31 @@
+
+														---------- ĐO BIẾN TRỞ BẰNG HÀM NGẮT ADC ---------------
+
+/* USER CODE BEGIN 0 */
+	uint32_t var;
+	
+	void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+	{
+		if(hadc->Instance == hadc1.Instance)
+		{
+			var = HAL_ADC_GetValue(&hadc1);
+		}
+	}
+/* USER CODE END 0 */
+--------------------------------------------------------------------------------------------------------
+/* USER CODE BEGIN 2 */
+		HAL_ADC_Start_IT(&hadc1);
+		
+  /* USER CODE END 2 */
+---------------------------------------------------------------------------------------------------------
+while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		HAL_ADC_Start(&hadc1);
+		HAL_Delay(50);
+		var = HAL_ADC_GetValue(&hadc1);
+		HAL_ADC_Stop(&hadc1);
+  }
+  /* USER CODE END 3 */

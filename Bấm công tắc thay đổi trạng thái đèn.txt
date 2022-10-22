@@ -1,0 +1,8 @@
+uint8_t status
+
+if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==0)
+	{
+		while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)==0) {}
+		status =~ status;
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, status);
+	}	

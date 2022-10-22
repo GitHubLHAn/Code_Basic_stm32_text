@@ -1,0 +1,25 @@
+		----------  LED ĐANG NHÁY, NHẤN NÚT THÌ LED DỪNG 5S, SAU ĐÓ NHÁY TRỞ LẠI <Lưu ý để bit ngắt Systick cao hơn chân ngắt>-----------
+	
+
+/* USER CODE BEGIN 0 */															
+	void HAL_GPIO_EXTI_Callback(uint16_t GPIO_PIN)			
+	{
+		if(GPIO_PIN == GPIO_PIN_12)
+		{
+			HAL_Delay(5000);	
+		}
+	}
+/* USER CODE END 0 */
+-------------------------------------------------------------------------------------
+/* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+		HAL_Delay(100);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+		HAL_Delay(100);
+  }
+  /* USER CODE END 3 */

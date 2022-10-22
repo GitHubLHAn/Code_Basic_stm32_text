@@ -1,0 +1,67 @@
+									-------- ĐO KHOẢNG CÁCH BẰNG CẢM BIẾN SIÊU ÂM-------
+
+/* USER CODE BEGIN 0 */
+	uint32_t IC_value1 = 0;
+	uint32_t IC_value2 = 0;
+	uint32_t hieuSo = 0;
+	uint8_t distance = 0;
+	uint8_t is_first_cap = 0; 				// kiem tra xem day co phai gia tri cua lan bat xung thu nhat khong? 
+
+	void delay_us(uint16_t time)
+	{
+		__HAL_TIM_SET_COUNTER(&htim1, 0);
+		while(__HAL_TIM_GET_COUNTER(&htim1) < time);
+	}
+
+	void kichXung_trig()					// Ham nay de kich xung cho TRIGGER
+	{
+		HAL_GPIO_WritePin(TRIGGER_GPIO_Port, TRIGGER_Pin, GPIO_PIN_SET);
+		delay_us(10);
+		HAL_GPIO_WritePin(TRIGGER_GPIO_Port, TRIGGER_Pin, GPIO_PIN_RESET);
+		__HAL_TIM_ENABLE_IT(&htim1,TIM_IT_CC1);
+	}
+
+	void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef*htim)
+	{
+		if(htim ->Channel ==HAL_TIM_ACTIVE_CHANNEL_1)
+		{
+			if(is_first_cap ==0)
+			{
+				IC_value1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+				is_first_cap = 1;
+				__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_ICPOLARITY_FALLING);
+			}
+			else if (is_first_cap == 1)
+			{
+				IC_value2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+				__HAL_TIM_SET_COUNTER(htim,0);
+				if(IC_value2 > IC_value1)
+				{
+					hieuSo = IC_value2 - IC_value1;
+				}
+				else if (IC_value2 < IC_value1)
+				{
+					hieuSo = 0xffff + IC_value2 - IC_value1;
+				}
+				distance = 0.017*hieuSo; 
+				is_first_cap =0;
+				__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_ICPOLARITY_RISING);
+				__HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC1);
+			}
+		}
+	}
+
+/* USER CODE END 0 */
+--------------------------------------------------
+/* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+		kichXung_trig();
+		HAL_Delay(200);
+		
+  }
+  /* USER CODE END 3 */
+}

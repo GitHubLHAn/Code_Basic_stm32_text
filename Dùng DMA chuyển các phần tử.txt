@@ -1,0 +1,11 @@
+
+								 ----- SỬ DỤNG DMA ĐỂ CHUYỂN CÁC PHẦN TỬ CỦA MẢNG NGUỒN SANG MẢNG ĐÍCH -------
+
+/* USER CODE BEGIN 0 */
+	uint8_t dst[10];					// dia chi mang dich
+	uint8_t src[10] = {1,2,3,4,5,6,7,8,9,10};		// dia chi mang nguon
+/* USER CODE END 0 */
+-----------------------------------------------------------------------------------------------------------------
+/* USER CODE BEGIN 2 */
+	HAL_DMA_Start(&hdma_memtomem_dma1_channel1,(uint32_t )&src, (uint32_t)&des,10);	---> khi thực hiện dòng này cả 10 phần tử sẽ được chuyển cùng 1 lúc
+  /* USER CODE END 2 */

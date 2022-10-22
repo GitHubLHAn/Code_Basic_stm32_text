@@ -1,0 +1,30 @@
+									------ SỬ DUNG TIMER ĐỂ TẠO HÀM DELAY-------
+										*** Lưu ý: chia tần số sao cho sau khi chia tần số là 1MHz (tức là 1 tick)****
+
+/* USER CODE BEGIN 0 */
+	void delay_us(uint16_t us)
+	{
+		__HAL_TIM_SetCounter(&htim1,0);
+		while(__HAL_TIM_GetCounter(&htim1) < us);
+	}
+	void delay_ms(uint16_t ms)
+	{
+		for(uint16_t i = 0; i<ms; i++)
+		{
+			delay_us(1000);
+		}
+	}
+/* USER CODE END 0 */
+-------------------------------------------------------------------------------
+/* USER CODE BEGIN 2 */
+	HAL_TIM_Base_Start(&htim1);
+  /* USER CODE END 2 */
+================================================= CÁCH 2
+void delay_ms(uint16_t ms)
+	{
+		while(ms--)
+		{
+			__HAL_TIM_SetCounter(&htim1,0);
+			while(__HAL_TIM_GetCounter(&htim1) <  1000);
+		}
+	}
